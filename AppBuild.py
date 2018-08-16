@@ -4,13 +4,11 @@ from httplib2 import Http
 from oauth2client import file, client, tools
 
 
+import pygsheets
+from oauth2client.service_account import ServiceAccountCredentials
 
+from Glass import Glass
 import numpy as np
-#import pandas as pd
-import Functions
-from Functions import Glass
-import matplotlib.pyplot as plt
-
 from tkinter import filedialog
 from tkinter import *
 
@@ -30,39 +28,32 @@ def main():
     """
 
 # Getting the credentials for my account and Google sheet.  Store credentials as a seperate folder
-    store = file.Storage('token.json')
-    creds = store.get()
-    if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
-        creds = tools.run_flow(flow, store)
-    service = build('sheets', 'v4', http=creds.authorize(Http()))
-
+    gc = pygsheets.authorize(outh_file='client_secret1.json')
+    spreadsheet_ID = 'LENS System Trial'
+    wks = gc.open(spreadsheet_ID).sheet1
+    
     # Call the Sheets API
-    SPREADSHEET_ID = '1rSe9kO-Aesv1X0qufU5jZtnxxsMri56OvPnOEkaMnP4'
-    RANGE_NAME = 'Sheet1!A:J'
-    result = service.spreadsheets().values().get(spreadsheetId=SPREADSHEET_ID,
-                                                range=RANGE_NAME).execute()
-    values = result.get('values', [])
     Id = []
-    for row in values:
-        Id.append (row[0:2])
+    Id = np.column_stack((wks.get_col(1, returnas ='matrix'),wks.get_col(2, returnas = 'matrix')))
+
+    #values = result.get('values', [])
+    #Id = []
+    #for row in values:
+     #   Id.append (row[0:2])
 
     print (Id)
-    if not values:
-        print('No data found.')
-    else:
-        # Basic File opening.  Supports opening mulitple files
-        root = Tk()
-        files = filedialog.askopenfilenames(parent=root, title='Choose multiple files')
-        files = root.tk.splitlist(files)
-        root.destroy()
-        Glasses = []
+    # Basic File opening.  Supports opening mulitple files
+    root = Tk()
+    files = filedialog.askopenfilenames(parent=root, title='Choose Poni and XRD measurements')
+    files = root.tk.splitlist(files)
+    root.destroy()
+    Glasses = []
 
-        for f in files:
-            Glasses.append(Glass(f,Id))
+    for f in files:
+        Glasses.append(Glass(f,Id))
 
-        for g in Glasses:
-            g.plot()
+    for g in Glasses:
+        g.plot()
 
 
 if __name__ == '__main__':
