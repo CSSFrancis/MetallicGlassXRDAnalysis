@@ -47,8 +47,6 @@ def integratePlate(filelist):
     for glass in glasses:
         print(glass.glassFiles)
         glass.getintand2theta(ponifiles)
-        glass.plot()
-
 
 
     return glasses
@@ -57,10 +55,11 @@ def integratePlate(filelist):
 root = Tk()
 aifiles = filedialog.askopenfilenames(parent=root, title='Choose multiple files')
 aifiles = root.tk.splitlist(aifiles)
-root.destroy()  
+root.destroy()
 print (aifiles)
 glasses =integratePlate(aifiles)
 
+glasses[0].plot()
 
 #glasses =integratePlate(('/home/carter/Documents/XRDData/Poni Files/XRDFiles/TestSample001.gfrm',
 #                        '/home/carter/Documents/XRDData/Poni Files/XRDFiles/TestSample001.poni',
